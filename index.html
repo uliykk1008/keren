@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>I Love You ❤️</title>
+<title>I LOVE YOU ❤️</title>
 
 <style>
 * {
@@ -18,13 +17,10 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #020002;
+    background: #000;
 }
 
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-family: Arial, sans-serif;
 }
 
@@ -33,60 +29,35 @@ canvas {
     inset: 0;
 }
 
-.message {
+.center {
     position: fixed;
     z-index: 10;
-    color: white;
-    text-align: center;
-    font-size: clamp(25px, 7vw, 55px);
-    letter-spacing: 8px;
-    font-weight: 300;
-    text-shadow:
-        0 0 8px #ff4fa3,
-        0 0 20px #ff1684,
-        0 0 40px #ff1684;
-    animation: heartbeat 1.8s infinite ease-in-out;
-    user-select: none;
-}
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
-.heart {
-    color: #ff4fa3;
-    font-size: 25px;
-    display: block;
-    margin-top: 15px;
+    color: white;
+    font-size: clamp(28px, 7vw, 55px);
+    font-weight: 300;
+    letter-spacing: 7px;
+    white-space: nowrap;
+
     text-shadow:
-        0 0 10px #ff1684,
-        0 0 30px #ff1684;
+        0 0 10px #ff69b4,
+        0 0 25px #ff1493,
+        0 0 50px #ff1493;
+
+    animation: heartbeat 1.6s infinite ease-in-out;
 }
 
 @keyframes heartbeat {
     0%, 100% {
-        transform: scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
 
     50% {
-        transform: scale(1.08);
+        transform: translate(-50%, -50%) scale(1.12);
     }
-}
-
-.start {
-    position: fixed;
-    z-index: 20;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #020002;
-    color: white;
-    font-size: 18px;
-    letter-spacing: 3px;
-    cursor: pointer;
-    transition: opacity 1s ease;
-}
-
-.start.hide {
-    opacity: 0;
-    pointer-events: none;
 }
 </style>
 </head>
@@ -95,13 +66,8 @@ canvas {
 
 <canvas id="canvas"></canvas>
 
-<div class="message">
-    I LOVE YOU
-    <span class="heart">♥</span>
-</div>
-
-<div class="start" id="start">
-    TAP TO BEGIN ♥
+<div class="center">
+    I LOVE YOU ❤️
 </div>
 
 <script>
@@ -112,16 +78,7 @@ const ctx = canvas.getContext("2d");
 let width;
 let height;
 
-const particles = [];
-const particleCount = 1200;
-
-let mouse = {
-    x: null,
-    y: null
-};
-
 function resize() {
-
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
 }
@@ -130,202 +87,58 @@ resize();
 
 window.addEventListener("resize", resize);
 
-window.addEventListener("mousemove", (e) => {
 
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-});
+/* =========================================
+   JUMLAH LINGKARAN DAN LOVE
+========================================= */
 
-window.addEventListener("touchmove", (e) => {
+const rings = 20;
+const wordsPerRing = 40;
 
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
-});
+const loves = [];
 
 
-/* ==========================
-   HEART FORMULA
-========================== */
+/* =========================================
+   MEMBUAT BANYAK LOVE
+========================================= */
 
-function heart(t) {
+for (let ring = 0; ring < rings; ring++) {
 
-    const x = 16 * Math.pow(Math.sin(t), 3);
+    for (let i = 0; i < wordsPerRing; i++) {
 
-    const y =
-        13 * Math.cos(t)
-        - 5 * Math.cos(2 * t)
-        - 2 * Math.cos(3 * t)
-        - Math.cos(4 * t);
+        loves.push({
 
-    return {
-        x: x,
-        y: y
-    };
-}
+            ring: ring,
 
+            angle:
+                (Math.PI * 2 / wordsPerRing) * i,
 
-/* ==========================
-   PARTICLE
-========================== */
+            speed:
+                0.0002 +
+                Math.random() * 0.0005,
 
-class Particle {
+            size:
+                9 +
+                Math.random() * 8,
 
-    constructor() {
+            opacity:
+                0.25 +
+                Math.random() * 0.75,
 
-        this.reset(true);
-    }
-
-    reset(first = false) {
-
-        this.t = Math.random() * Math.PI * 2;
-
-        this.size =
-            Math.random() * 1.8 + 0.5;
-
-        this.speed =
-            Math.random() * 0.025 + 0.005;
-
-        this.phase =
-            Math.random() * Math.PI * 2;
-
-        this.alpha =
-            Math.random() * 0.7 + 0.3;
-
-        this.offset =
-            (Math.random() - 0.5) * 2;
-
-        const h = heart(this.t);
-
-        const scale =
-            Math.min(width, height) * 0.018;
-
-        this.x =
-            width / 2 + h.x * scale;
-
-        this.y =
-            height / 2 - h.y * scale;
-
-        if (!first) {
-
-            this.x =
-                Math.random() * width;
-
-            this.y =
-                Math.random() * height;
-        }
-    }
-
-    update(time) {
-
-        this.t += this.speed;
-
-        if (this.t > Math.PI * 2) {
-            this.t = 0;
-        }
-
-        const h = heart(this.t);
-
-        const beat =
-            1 +
-            Math.sin(time * 0.003) * 0.045;
-
-        const scale =
-            Math.min(width, height) *
-            0.018 *
-            beat;
-
-        let targetX =
-            width / 2 +
-            h.x * scale;
-
-        let targetY =
-            height / 2 -
-            h.y * scale;
-
-        /* floating movement */
-
-        targetX +=
-            Math.sin(time * 0.0015 + this.phase) *
-            2;
-
-        targetY +=
-            Math.cos(time * 0.0012 + this.phase) *
-            2;
-
-        /* mouse attraction */
-
-        if (
-            mouse.x !== null &&
-            mouse.y !== null
-        ) {
-
-            const dx = mouse.x - targetX;
-            const dy = mouse.y - targetY;
-
-            const distance =
-                Math.sqrt(dx * dx + dy * dy);
-
-            if (distance < 120) {
-
-                targetX -=
-                    dx * 0.08;
-
-                targetY -=
-                    dy * 0.08;
-            }
-        }
-
-        this.x +=
-            (targetX - this.x) * 0.035;
-
-        this.y +=
-            (targetY - this.y) * 0.035;
-    }
-
-    draw() {
-
-        ctx.beginPath();
-
-        ctx.arc(
-            this.x,
-            this.y,
-            this.size,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle =
-            `rgba(255, 50, 150, ${this.alpha})`;
-
-        ctx.shadowBlur = 12;
-
-        ctx.shadowColor =
-            "#ff1684";
-
-        ctx.fill();
+            phase:
+                Math.random() * Math.PI * 2
+        });
     }
 }
 
 
-/* ==========================
-   CREATE PARTICLES
-========================== */
-
-for (let i = 0; i < particleCount; i++) {
-
-    particles.push(
-        new Particle()
-    );
-}
-
-
-/* ==========================
-   BACKGROUND STARS
-========================== */
+/* =========================================
+   BINTANG
+========================================= */
 
 const stars = [];
 
-for (let i = 0; i < 150; i++) {
+for (let i = 0; i < 250; i++) {
 
     stars.push({
 
@@ -336,8 +149,8 @@ for (let i = 0; i < 150; i++) {
         size:
             Math.random() * 1.5,
 
-        alpha:
-            Math.random()
+        phase:
+            Math.random() * Math.PI * 2
     });
 }
 
@@ -346,12 +159,12 @@ function drawStars(time) {
 
     for (const star of stars) {
 
-        const glow =
-            0.3 +
+        const opacity =
+            0.15 +
             Math.sin(
                 time * 0.002 +
-                star.x
-            ) * 0.3;
+                star.phase
+            ) * 0.25;
 
         ctx.beginPath();
 
@@ -364,16 +177,16 @@ function drawStars(time) {
         );
 
         ctx.fillStyle =
-            `rgba(255,255,255,${glow})`;
+            `rgba(255,255,255,${opacity})`;
 
         ctx.fill();
     }
 }
 
 
-/* ==========================
-   ANIMATION
-========================== */
+/* =========================================
+   ANIMASI
+========================================= */
 
 function animate(time) {
 
@@ -386,31 +199,128 @@ function animate(time) {
 
     drawStars(time);
 
-    for (const particle of particles) {
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-        particle.update(time);
+    const baseRadius =
+        Math.min(width, height) * 0.025;
 
-        particle.draw();
+
+    for (const love of loves) {
+
+        /* Jarak setiap lingkaran */
+
+        let radius =
+            baseRadius +
+            love.ring *
+            Math.min(width, height) *
+            0.035;
+
+
+        /* Efek denyut */
+
+        const heartbeat =
+            1 +
+            Math.sin(
+                time * 0.002 +
+                love.ring * 0.25
+            ) * 0.06;
+
+        radius *= heartbeat;
+
+
+        /* Rotasi */
+
+        const angle =
+            love.angle +
+            time * love.speed +
+            love.ring * 0.08;
+
+
+        /* Posisi */
+
+        const x =
+            centerX +
+            Math.cos(angle) *
+            radius;
+
+        const y =
+            centerY +
+            Math.sin(angle) *
+            radius;
+
+
+        ctx.save();
+
+        ctx.translate(x, y);
+
+
+        /* LOVE ikut berputar */
+
+        ctx.rotate(
+            angle + Math.PI / 2
+        );
+
+
+        /* LOVE membesar dan mengecil */
+
+        const pulse =
+            1 +
+            Math.sin(
+                time * 0.003 +
+                love.phase
+            ) * 0.12;
+
+        ctx.scale(
+            pulse,
+            pulse
+        );
+
+
+        ctx.font =
+            `bold ${love.size}px Arial`;
+
+        ctx.textAlign =
+            "center";
+
+        ctx.textBaseline =
+            "middle";
+
+
+        /* Warna pink bercahaya */
+
+        ctx.fillStyle =
+            `rgba(
+                255,
+                70,
+                170,
+                ${love.opacity}
+            )`;
+
+
+        ctx.shadowBlur = 14;
+
+        ctx.shadowColor =
+            "#ff1493";
+
+
+        ctx.fillText(
+            "LOVE",
+            0,
+            0
+        );
+
+
+        ctx.restore();
     }
 
-    requestAnimationFrame(animate);
+
+    requestAnimationFrame(
+        animate
+    );
 }
 
 animate(0);
-
-
-/* ==========================
-   START SCREEN
-========================== */
-
-const start =
-    document.getElementById("start");
-
-start.addEventListener("click", () => {
-
-    start.classList.add("hide");
-
-});
 
 </script>
 
