@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I LOVE YOU ❤️</title>
+
+<title>NAFILAH</title>
 
 <style>
 * {
@@ -17,7 +18,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #000;
+    background: #09000f;
 }
 
 body {
@@ -32,31 +33,40 @@ canvas {
 .center {
     position: fixed;
     z-index: 10;
+
     top: 50%;
     left: 50%;
+
     transform: translate(-50%, -50%);
 
     color: white;
-    font-size: clamp(28px, 7vw, 55px);
-    font-weight: 300;
-    letter-spacing: 7px;
-    white-space: nowrap;
+
+    font-size: clamp(35px, 10vw, 75px);
+
+    font-weight: 700;
+
+    letter-spacing: 8px;
 
     text-shadow:
-        0 0 10px #ff69b4,
-        0 0 25px #ff1493,
-        0 0 50px #ff1493;
+        0 0 8px #ff8bd8,
+        0 0 20px #ff4fc3,
+        0 0 40px #b44cff;
 
-    animation: heartbeat 1.6s infinite ease-in-out;
+    animation: pulse 2s infinite ease-in-out;
 }
 
-@keyframes heartbeat {
+@keyframes pulse {
+
     0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
+        transform:
+            translate(-50%, -50%)
+            scale(1);
     }
 
     50% {
-        transform: translate(-50%, -50%) scale(1.12);
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
     }
 }
 </style>
@@ -67,104 +77,146 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <div class="center">
-    I LOVE YOU ❤️
+    NAFILAH
 </div>
 
 <script>
 
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const canvas =
+    document.getElementById("canvas");
+
+const ctx =
+    canvas.getContext("2d");
 
 let width;
 let height;
 
+
+/* =====================================
+   UKURAN LAYAR
+===================================== */
+
 function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+
+    width =
+        canvas.width =
+        window.innerWidth;
+
+    height =
+        canvas.height =
+        window.innerHeight;
 }
 
 resize();
 
-window.addEventListener("resize", resize);
+window.addEventListener(
+    "resize",
+    resize
+);
 
 
-/* =========================================
-   JUMLAH LINGKARAN DAN LOVE
-========================================= */
+/* =====================================
+   PENGATURAN NAFILAH
+===================================== */
 
-const rings = 20;
-const wordsPerRing = 40;
+const rings = 18;
 
-const loves = [];
+const wordsPerRing = 30;
+
+const names = [];
 
 
-/* =========================================
-   MEMBUAT BANYAK LOVE
-========================================= */
+/* =====================================
+   MEMBUAT BANYAK NAFILAH
+===================================== */
 
-for (let ring = 0; ring < rings; ring++) {
+for (
+    let ring = 0;
+    ring < rings;
+    ring++
+) {
 
-    for (let i = 0; i < wordsPerRing; i++) {
+    for (
+        let i = 0;
+        i < wordsPerRing;
+        i++
+    ) {
 
-        loves.push({
+        names.push({
 
             ring: ring,
 
             angle:
-                (Math.PI * 2 / wordsPerRing) * i,
+                (
+                    Math.PI * 2 /
+                    wordsPerRing
+                ) * i,
 
             speed:
                 0.0002 +
-                Math.random() * 0.0005,
+                Math.random() *
+                0.0006,
 
             size:
                 9 +
-                Math.random() * 8,
+                Math.random() * 7,
 
             opacity:
-                0.25 +
-                Math.random() * 0.75,
+                0.2 +
+                Math.random() * 0.8,
 
             phase:
-                Math.random() * Math.PI * 2
+                Math.random() *
+                Math.PI * 2
         });
     }
 }
 
 
-/* =========================================
+/* =====================================
    BINTANG
-========================================= */
+===================================== */
 
 const stars = [];
 
-for (let i = 0; i < 250; i++) {
+for (
+    let i = 0;
+    i < 250;
+    i++
+) {
 
     stars.push({
 
-        x: Math.random() * width,
+        x:
+            Math.random() *
+            width,
 
-        y: Math.random() * height,
+        y:
+            Math.random() *
+            height,
 
         size:
             Math.random() * 1.5,
 
         phase:
-            Math.random() * Math.PI * 2
+            Math.random() *
+            Math.PI * 2
     });
 }
 
 
 function drawStars(time) {
 
-    for (const star of stars) {
+    for (
+        const star of stars
+    ) {
 
         const opacity =
-            0.15 +
+            0.2 +
             Math.sin(
                 time * 0.002 +
                 star.phase
-            ) * 0.25;
+            ) * 0.3;
 
         ctx.beginPath();
 
@@ -177,16 +229,21 @@ function drawStars(time) {
         );
 
         ctx.fillStyle =
-            `rgba(255,255,255,${opacity})`;
+            `rgba(
+                255,
+                180,
+                240,
+                ${opacity}
+            )`;
 
         ctx.fill();
     }
 }
 
 
-/* =========================================
+/* =====================================
    ANIMASI
-========================================= */
+===================================== */
 
 function animate(time) {
 
@@ -197,44 +254,54 @@ function animate(time) {
         height
     );
 
+
     drawStars(time);
 
-    const centerX = width / 2;
-    const centerY = height / 2;
 
-    const baseRadius =
-        Math.min(width, height) * 0.025;
+    const centerX =
+        width / 2;
+
+    const centerY =
+        height / 2;
 
 
-    for (const love of loves) {
+    const base =
+        Math.min(
+            width,
+            height
+        );
 
-        /* Jarak setiap lingkaran */
+
+    /* =================================
+       SEMUA NAFILAH
+    ================================= */
+
+    for (
+        const name of names
+    ) {
 
         let radius =
-            baseRadius +
-            love.ring *
-            Math.min(width, height) *
-            0.035;
+            base * 0.025 +
+            name.ring *
+            base * 0.035;
 
 
-        /* Efek denyut */
+        /* Denyut */
 
-        const heartbeat =
+        radius *=
             1 +
             Math.sin(
                 time * 0.002 +
-                love.ring * 0.25
+                name.ring * 0.3
             ) * 0.06;
-
-        radius *= heartbeat;
 
 
         /* Rotasi */
 
         const angle =
-            love.angle +
-            time * love.speed +
-            love.ring * 0.08;
+            name.angle +
+            time * name.speed +
+            name.ring * 0.08;
 
 
         /* Posisi */
@@ -252,24 +319,30 @@ function animate(time) {
 
         ctx.save();
 
-        ctx.translate(x, y);
 
-
-        /* LOVE ikut berputar */
-
-        ctx.rotate(
-            angle + Math.PI / 2
+        ctx.translate(
+            x,
+            y
         );
 
 
-        /* LOVE membesar dan mengecil */
+        /* Mengikuti lingkaran */
+
+        ctx.rotate(
+            angle +
+            Math.PI / 2
+        );
+
+
+        /* Membesar mengecil */
 
         const pulse =
             1 +
             Math.sin(
                 time * 0.003 +
-                love.phase
+                name.phase
             ) * 0.12;
+
 
         ctx.scale(
             pulse,
@@ -278,34 +351,56 @@ function animate(time) {
 
 
         ctx.font =
-            `bold ${love.size}px Arial`;
+            `bold ${name.size}px Arial`;
+
 
         ctx.textAlign =
             "center";
+
 
         ctx.textBaseline =
             "middle";
 
 
-        /* Warna pink bercahaya */
+        /* Warna bestie */
+
+        const color =
+            name.ring % 3 === 0
+                ? `rgba(
+                    255,
+                    130,
+                    215,
+                    ${name.opacity}
+                  )`
+                : name.ring % 3 === 1
+                ? `rgba(
+                    190,
+                    120,
+                    255,
+                    ${name.opacity}
+                  )`
+                : `rgba(
+                    255,
+                    180,
+                    240,
+                    ${name.opacity}
+                  )`;
+
 
         ctx.fillStyle =
-            `rgba(
-                255,
-                70,
-                170,
-                ${love.opacity}
-            )`;
+            color;
 
 
-        ctx.shadowBlur = 14;
+        ctx.shadowBlur =
+            14;
+
 
         ctx.shadowColor =
-            "#ff1493";
+            "#e95cff";
 
 
         ctx.fillText(
-            "LOVE",
+            "NAFILAH",
             0,
             0
         );
@@ -319,6 +414,7 @@ function animate(time) {
         animate
     );
 }
+
 
 animate(0);
 
