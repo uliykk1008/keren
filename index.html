@@ -18,7 +18,7 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #09000f;
+    background: #03010a;
 }
 
 body {
@@ -30,43 +30,71 @@ canvas {
     inset: 0;
 }
 
-.center {
+.name {
     position: fixed;
-    z-index: 10;
-
     top: 50%;
     left: 50%;
-
     transform: translate(-50%, -50%);
 
     color: white;
-
-    font-size: clamp(35px, 10vw, 75px);
-
+    font-size: clamp(42px, 12vw, 90px);
     font-weight: 700;
+    letter-spacing: 12px;
 
-    letter-spacing: 8px;
+    opacity: 0;
 
     text-shadow:
-        0 0 8px #ff8bd8,
-        0 0 20px #ff4fc3,
-        0 0 40px #b44cff;
+        0 0 10px #ffffff,
+        0 0 25px #ff8de1,
+        0 0 50px #b66cff,
+        0 0 90px #8d4dff;
 
-    animation: pulse 2s infinite ease-in-out;
+    animation: appear 3s ease forwards,
+               glow 2s ease-in-out infinite 3s;
+
+    pointer-events: none;
 }
 
-@keyframes pulse {
-
-    0%, 100% {
+@keyframes appear {
+    0% {
+        opacity: 0;
         transform:
             translate(-50%, -50%)
-            scale(1);
+            scale(0.4);
+        filter: blur(15px);
     }
 
-    50% {
+    70% {
+        opacity: 1;
         transform:
             translate(-50%, -50%)
             scale(1.08);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        text-shadow:
+            0 0 10px #ffffff,
+            0 0 25px #ff8de1,
+            0 0 50px #b66cff;
+    }
+
+    50% {
+        text-shadow:
+            0 0 15px #ffffff,
+            0 0 35px #ff8de1,
+            0 0 75px #b66cff,
+            0 0 110px #8d4dff;
     }
 }
 </style>
@@ -76,100 +104,64 @@ canvas {
 
 <canvas id="canvas"></canvas>
 
-<div class="center">
+<div class="name">
     NAFILAH
 </div>
 
 <script>
 
-const canvas =
-    document.getElementById("canvas");
-
-const ctx =
-    canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 let width;
 let height;
 
-
-/* =====================================
-   UKURAN LAYAR
-===================================== */
-
 function resize() {
-
-    width =
-        canvas.width =
-        window.innerWidth;
-
-    height =
-        canvas.height =
-        window.innerHeight;
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
 }
 
 resize();
 
-window.addEventListener(
-    "resize",
-    resize
-);
+window.addEventListener("resize", resize);
 
 
 /* =====================================
-   PENGATURAN NAFILAH
+   PARTIKEL
 ===================================== */
 
-const rings = 18;
+const particles = [];
 
-const wordsPerRing = 30;
+const particleCount = 1300;
 
-const names = [];
+for (let i = 0; i < particleCount; i++) {
 
+    particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
 
-/* =====================================
-   MEMBUAT BANYAK NAFILAH
-===================================== */
+        targetX: width / 2,
+        targetY: height / 2,
 
-for (
-    let ring = 0;
-    ring < rings;
-    ring++
-) {
+        size: Math.random() * 2 + 0.5,
 
-    for (
-        let i = 0;
-        i < wordsPerRing;
-        i++
-    ) {
+        speed:
+            Math.random() * 0.025 + 0.005,
 
-        names.push({
+        angle:
+            Math.random() * Math.PI * 2,
 
-            ring: ring,
+        radius:
+            Math.random() *
+            Math.max(width, height) *
+            0.7,
 
-            angle:
-                (
-                    Math.PI * 2 /
-                    wordsPerRing
-                ) * i,
+        phase:
+            Math.random() * Math.PI * 2,
 
-            speed:
-                0.0002 +
-                Math.random() *
-                0.0006,
-
-            size:
-                9 +
-                Math.random() * 7,
-
-            opacity:
-                0.2 +
-                Math.random() * 0.8,
-
-            phase:
-                Math.random() *
-                Math.PI * 2
-        });
-    }
+        opacity:
+            Math.random() * 0.8 + 0.2
+    });
 }
 
 
@@ -179,44 +171,27 @@ for (
 
 const stars = [];
 
-for (
-    let i = 0;
-    i < 250;
-    i++
-) {
+for (let i = 0; i < 250; i++) {
 
     stars.push({
-
-        x:
-            Math.random() *
-            width,
-
-        y:
-            Math.random() *
-            height,
-
-        size:
-            Math.random() * 1.5,
-
-        phase:
-            Math.random() *
-            Math.PI * 2
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size: Math.random() * 1.5,
+        phase: Math.random() * Math.PI * 2
     });
 }
 
 
 function drawStars(time) {
 
-    for (
-        const star of stars
-    ) {
+    for (const star of stars) {
 
-        const opacity =
-            0.2 +
+        const alpha =
+            0.15 +
             Math.sin(
                 time * 0.002 +
                 star.phase
-            ) * 0.3;
+            ) * 0.25;
 
         ctx.beginPath();
 
@@ -231,9 +206,9 @@ function drawStars(time) {
         ctx.fillStyle =
             `rgba(
                 255,
-                180,
-                240,
-                ${opacity}
+                255,
+                255,
+                ${alpha}
             )`;
 
         ctx.fill();
@@ -242,171 +217,244 @@ function drawStars(time) {
 
 
 /* =====================================
-   ANIMASI
+   MEMBUAT TARGET TEKS
 ===================================== */
 
-function animate(time) {
+const textCanvas =
+    document.createElement("canvas");
 
-    ctx.clearRect(
+const textCtx =
+    textCanvas.getContext("2d");
+
+function createTextTargets() {
+
+    textCanvas.width = width;
+    textCanvas.height = height;
+
+    textCtx.clearRect(
         0,
         0,
         width,
         height
     );
 
+    const fontSize =
+        Math.min(width * 0.16, 110);
 
-    drawStars(time);
+    textCtx.font =
+        `bold ${fontSize}px Arial`;
 
+    textCtx.textAlign = "center";
+    textCtx.textBaseline = "middle";
 
-    const centerX =
-        width / 2;
+    textCtx.fillStyle = "white";
 
-    const centerY =
-        height / 2;
+    textCtx.fillText(
+        "NAFILAH",
+        width / 2,
+        height / 2
+    );
 
-
-    const base =
-        Math.min(
+    const image =
+        textCtx.getImageData(
+            0,
+            0,
             width,
             height
         );
 
-
-    /* =================================
-       SEMUA NAFILAH
-    ================================= */
+    const points = [];
 
     for (
-        const name of names
+        let y = 0;
+        y < height;
+        y += 4
     ) {
 
-        let radius =
-            base * 0.025 +
-            name.ring *
-            base * 0.035;
+        for (
+            let x = 0;
+            x < width;
+            x += 4
+        ) {
+
+            const index =
+                (y * width + x) * 4;
+
+            if (image.data[index + 3] > 100) {
+
+                points.push({
+                    x: x,
+                    y: y
+                });
+            }
+        }
+    }
+
+    for (
+        let i = 0;
+        i < particles.length;
+        i++
+    ) {
+
+        const point =
+            points[
+                i % points.length
+            ];
+
+        particles[i].targetX =
+            point.x;
+
+        particles[i].targetY =
+            point.y;
+    }
+}
+
+createTextTargets();
 
 
-        /* Denyut */
+/* =====================================
+   ANIMASI
+===================================== */
 
-        radius *=
-            1 +
+function animate(time) {
+
+    ctx.fillStyle =
+        "rgba(3,1,10,0.18)";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    drawStars(time);
+
+
+    const progress =
+        (Math.sin(time * 0.0007) + 1) / 2;
+
+
+    for (
+        const particle of particles
+    ) {
+
+        /*
+          Partikel bergerak menuju
+          bentuk NAFILAH
+        */
+
+        const attraction =
+            0.008 +
+            progress * 0.025;
+
+
+        particle.x +=
+            (
+                particle.targetX -
+                particle.x
+            ) * attraction;
+
+
+        particle.y +=
+            (
+                particle.targetY -
+                particle.y
+            ) * attraction;
+
+
+        /*
+          Gerakan lembut
+        */
+
+        particle.x +=
             Math.sin(
-                time * 0.002 +
-                name.ring * 0.3
-            ) * 0.06;
+                time * 0.001 +
+                particle.phase
+            ) * 0.25;
 
 
-        /* Rotasi */
+        particle.y +=
+            Math.cos(
+                time * 0.0012 +
+                particle.phase
+            ) * 0.25;
+
+
+        /*
+          Glow
+        */
+
+        ctx.beginPath();
+
+        ctx.arc(
+            particle.x,
+            particle.y,
+            particle.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(
+                255,
+                ${80 + Math.random() * 100},
+                220,
+                ${particle.opacity}
+            )`;
+
+        ctx.shadowBlur = 12;
+
+        ctx.shadowColor =
+            "#ff5bd7";
+
+        ctx.fill();
+    }
+
+
+    /*
+      Partikel cahaya tambahan
+    */
+
+    for (let i = 0; i < 8; i++) {
 
         const angle =
-            name.angle +
-            time * name.speed +
-            name.ring * 0.08;
+            time * 0.0004 +
+            i;
 
-
-        /* Posisi */
+        const radius =
+            Math.min(width, height) *
+            0.35;
 
         const x =
-            centerX +
+            width / 2 +
             Math.cos(angle) *
             radius;
 
         const y =
-            centerY +
+            height / 2 +
             Math.sin(angle) *
             radius;
 
+        ctx.beginPath();
 
-        ctx.save();
-
-
-        ctx.translate(
+        ctx.arc(
             x,
-            y
+            y,
+            2,
+            0,
+            Math.PI * 2
         );
-
-
-        /* Mengikuti lingkaran */
-
-        ctx.rotate(
-            angle +
-            Math.PI / 2
-        );
-
-
-        /* Membesar mengecil */
-
-        const pulse =
-            1 +
-            Math.sin(
-                time * 0.003 +
-                name.phase
-            ) * 0.12;
-
-
-        ctx.scale(
-            pulse,
-            pulse
-        );
-
-
-        ctx.font =
-            `bold ${name.size}px Arial`;
-
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.textBaseline =
-            "middle";
-
-
-        /* Warna bestie */
-
-        const color =
-            name.ring % 3 === 0
-                ? `rgba(
-                    255,
-                    130,
-                    215,
-                    ${name.opacity}
-                  )`
-                : name.ring % 3 === 1
-                ? `rgba(
-                    190,
-                    120,
-                    255,
-                    ${name.opacity}
-                  )`
-                : `rgba(
-                    255,
-                    180,
-                    240,
-                    ${name.opacity}
-                  )`;
-
 
         ctx.fillStyle =
-            color;
+            "#ffffff";
 
-
-        ctx.shadowBlur =
-            14;
-
+        ctx.shadowBlur = 20;
 
         ctx.shadowColor =
-            "#e95cff";
+            "#ff75dc";
 
-
-        ctx.fillText(
-            "NAFILAH",
-            0,
-            0
-        );
-
-
-        ctx.restore();
+        ctx.fill();
     }
 
 
@@ -414,7 +462,6 @@ function animate(time) {
         animate
     );
 }
-
 
 animate(0);
 
